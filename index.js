@@ -4,9 +4,6 @@ if (document.readyState == "loading") {
 } else {
   ready();
 }
-setTimeout(function () {
-  console.log("Hello", 1000);
-});
 
 function ready() {
   setInterval(birthdayWish, 1000);
@@ -33,12 +30,10 @@ function birthdayWish() {
   if (checkBirthday === true) {
     console.log("Happy Birthday");
   } else {
-    console.log("It's not your birthday");
     const remainingTime = calculateRemainingTime(todayDate, eventDate);
 
     if (remainingTime < 0) {
       eventDate.year += 1;
-      console.log(eventDate.year);
     } else {
       let storeconvertedDate = convertMillisecond(todayDate, remainingTime);
       updateDOM(storeconvertedDate);
