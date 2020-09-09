@@ -1,37 +1,103 @@
-// console.log(days);
+//Checking if the document is ready or not
+if (document.readyState == "loading") {
+  document.addEventListener("DOMContentLoaded", ready);
+} else {
+  ready();
+}
+setTimeout(function () {
+  console.log("Hello", 1000);
+});
 
-function countMyBirthday() {
-  let todayDate = new Date();
+function ready() {
+  setInterval(birthdayWish, 1000);
+}
+function birthdayWish() {
+  const currentDate = new Date();
+  const todayDate = {
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth(),
+    day: currentDate.getDate(),
+    time: currentDate.getTime(),
+  };
+
+  const setEventDate = new Date(2020, 11, 6);
+  const eventDate = {
+    year: setEventDate.getFullYear(),
+    month: setEventDate.getMonth(),
+    day: setEventDate.getDate(),
+    time: setEventDate.getTime(),
+  };
+
+  const checkBirthday = isBirthday(todayDate, eventDate);
+
+  if (checkBirthday === true) {
+    console.log("Happy Birthday");
+  } else {
+    console.log("It's not your birthday");
+    const remainingTime = calculateRemainingTime(todayDate, eventDate);
+
+    if (remainingTime < 0) {
+      eventDate.year += 1;
+      console.log(eventDate.year);
+    } else {
+      let storeconvertedDate = convertMillisecond(todayDate, remainingTime);
+      updateDOM(storeconvertedDate);
+    }
+  }
 }
 
-// console.log(date);
-
-function clock() {
-  // setTimeout("clock()", 1000);
-  let today = new Date(2020, 2, 5);
-  // var date = today.getSeconds();
-  // const seconds = (document.getElementsByClassName(
-  //   "seconds-value"
-  // )[0].innerHTML = date);
-  // const days = (document.getElementsByClassName(
-  //   "days-value"
-  // )[0].innerHTML = today.getDay());
-  // const hours = (document.getElementsByClassName(
-  //   "hours-value"
-  // )[0].innerHTML = today.getHours());
-  // const minutes = (document.getElementsByClassName(
-  //   "minutes-value"
-  // )[0].innerHTML = today.getMinutes());
-
-  console.log(today);
+function calculateRemainingTime({ time: todayTime }, { time: eventTime }) {
+  return eventTime - todayTime;
 }
 
-clock();
+function isBirthday(
+  { month: todayMonth, day: todayDay },
+  { month: eventMonth, day: eventDay }
+) {
+  return todayMonth === eventMonth && todayDay === eventDay ? true : false;
+}
 
-// Birth Date
-//recent day
-// Remaining Time = Birth Date - Recent Day
-// eg : Remaininh Time = 7 months 12 days 14 hours 2 minutes and 30 second
-// Next is to reduce these
-// Logic 60s = 1 min, 60 min = 1 hours, 24 hours = 1 day
-//How many days are in a month is not fixed so we need to get data from server
+function convertMillisecond({ year, month }, remainingTime) {
+  //Total days in a month
+  let totalDaysInMonth = new Date(year, month, 0).getDate();
+
+  // Converting millisecond
+  let _second = 1000;
+  let _minute = _second * 60;
+  let _hour = _minute * 60;
+  let _day = _hour * 24;
+  let _month = _day * totalDaysInMonth;
+
+  let months = Math.floor(remainingTime / _month);
+  let days = Math.floor((remainingTime % _month) / _day);
+  let hours = Math.floor((remainingTime % _day) / _hour);
+  let minutes = Math.floor((remainingTime % _hour) / _minute);
+  let seconds = Math.floor((remainingTime % _minute) / _second);
+
+  return [months, days, hours, minutes, seconds];
+}
+
+function updateDOM(storeconvertedDate) {
+  let finalTimeValue = storeconvertedDate.map((timeValue) => {
+    if (timeValue < 10) {
+      timeValue = "0" + timeValue;
+    }
+    return timeValue;
+  });
+
+  const [
+    finalMonth,
+    finalDay,
+    finalHour,
+    finalMinute,
+    finalSecond,
+  ] = finalTimeValue;
+
+  //Updating in the innerBox
+  let innerBox = document.querySelectorAll(".inner-box");
+  innerBox[0].innerHTML = finalMonth;
+  innerBox[1].innerHTML = finalDay;
+  innerBox[2].innerHTML = finalHour;
+  innerBox[3].innerHTML = finalMinute;
+  innerBox[4].innerHTML = finalSecond;
+}
